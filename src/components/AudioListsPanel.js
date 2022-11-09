@@ -18,6 +18,8 @@ const AudioListsPanel = ({
   locale,
   icon,
   playing,
+  audioListRef,
+  playingItemRef,
 }) => (
   <div
     className={cls('audio-lists-panel', panelToggleAnimate, {
@@ -55,6 +57,7 @@ const AudioListsPanel = ({
       </h2>
     </div>
     <div
+      ref={audioListRef}
       className={cls('audio-lists-panel-content', {
         'no-content': audioLists.length < 1,
       })}
@@ -68,6 +71,11 @@ const AudioListsPanel = ({
             return (
               <li
                 key={audioId}
+                ref={
+                  isCurrentPlaying
+                  ? playingItemRef
+                  : null
+                }
                 title={
                   !playing
                     ? locale.clickToPlayText

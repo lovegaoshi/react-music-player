@@ -250,6 +250,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
     this.player = createRef()
     this.destroyBtn = createRef()
     this.shuffledAudioListIndex = shuffleArray(Array.from(Array(props.audioLists.length),(x,i)=>i))
+    this.audioListRef = React.createRef()
+    this.playingItemRef = React.createRef()
   }
 
   render() {
@@ -531,6 +533,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
             renderAudioTitle={this.renderAudioTitle}
             shouldShowPlayIcon={shouldShowPlayIcon}
             isResetCoverRotate={isResetCoverRotate}
+            
           />
         )}
 
@@ -698,6 +701,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
           onDelete={this.onDeleteAudioLists}
           removeId={removeId}
           locale={locale}
+          audioListRef={this.audioListRef}
+          playingItemRef={this.playingItemRef}
         />
         {/* 播放模式提示框 */}
         {!isMobile && (
@@ -2416,6 +2421,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (prevState.musicSrc !== this.state.musicSrc) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ isResetCoverRotate: true })
+      this.audioListRef.current.scrollTop = Math.max(0, this.playingItemRef.current.offsetTop - 50)
     }
   }
 
