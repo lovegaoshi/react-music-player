@@ -100,6 +100,10 @@ const DEFAULT_ICON = {
   empty: <EmptyIcon />,
 }
 
+function shuffleArray(arr) {
+  return [...arr].sort(() => Math.random() - 0.5);
+}
+
 export default class ReactJkMusicPlayer extends PureComponent {
   isDrag = false
 
@@ -245,6 +249,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     this.player = createRef()
     this.destroyBtn = createRef()
+    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(props.audioLists.length),(x,i)=>i))
   }
 
   render() {
@@ -919,6 +924,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
   clearAudioLists = () => {
     this.props.onAudioListsChange && this.props.onAudioListsChange('', [], {})
+    this.shuffledAudioListIndex = []
     this.resetAudioStatus()
   }
 
@@ -963,6 +969,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
         newAudioLists,
         this.getBaseAudioInfo(),
       )
+    
+    this.shuffledAudioListIndex = []
   }
 
   openAudioListsPanel = () => {
@@ -1521,14 +1529,16 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
       // 随机播放
       case PLAY_MODE.shufflePlay:
-        {
-          let randomIndex = createRandomNum(0, audioListsLen - 1)
-          if (randomIndex === this.getCurrentPlayIndex()) {
-            randomIndex = this.getPlayIndex(randomIndex + 1)
-          }
-          const randomPlayId = (audioLists[randomIndex] || {})[PLAYER_KEY]
-          this.audioListsPlay(randomPlayId, true)
+        let randomIndex = this.shuffledAudioListIndex.findIndex(
+          (index) => index === currentPlayIndex,
+        )
+        randomIndex = isNext? randomIndex + 1 : randomIndex - 1
+        if (randomIndex >= this.shuffledAudioListIndex.length) {
+          randomIndex = 0
+        } else if (randomIndex <= 0) {
+          randomIndex = this.shuffledAudioListIndex.length - 1
         }
+        this.audioListsPlay(audioLists[this.shuffledAudioListIndex[randomIndex]][PLAYER_KEY], true)
         break
       default:
         break
@@ -2066,6 +2076,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
         audioLists,
         this.getBaseAudioInfo(),
       )
+    
+    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(audioLists.length),(x,i)=>i))
+    console.debug('shuffled AudioList indices is updated to a new length of ', audioLists.length)
   }
 
   loadNewAudioLists = (nextProps) => {
@@ -2137,6 +2150,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
           this.getBaseAudioInfo(),
         )
     })
+    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(nextProps.audioLists.length),(x,i)=>i))
+    console.debug('shuffled AudioList indices is updated to a new length of ', nextProps.audioLists.length)
   }
 
   updatePlayIndex = (playIndex) => {
