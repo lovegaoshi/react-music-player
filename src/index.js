@@ -175,6 +175,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     loadAudioErrorPlayNext: true, // 加载音频失败时 是否尝试播放下一首
     preload: false, // 是否在页面加载后立即加载音频
     glassBg: false, // 是否是毛玻璃效果
+    bannerBg: '',
     remember: false, // 是否记住当前播放状态
     remove: true, // 音乐是否可以删除
     defaultPlayIndex: 0, // 默认播放索引
@@ -274,6 +275,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       autoHiddenCover,
       showDestroy,
       responsive,
+      bannerBg,
     } = this.props
 
     const { locale } = this
@@ -545,6 +547,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
             className={cls('music-player-panel', 'translate', {
               'glass-bg': glassBg,
             })}
+            style={{
+              backgroundImage: 'url('.concat(bannerBg, ')'),
+            }}
           >
             <section className="panel-content">
               {/* lgtm [js/trivial-conditional] */}
@@ -1435,7 +1440,14 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const currentPlayMode = isSingleLoop ? PLAY_MODE.order : playMode
 
     this.lyric && this.lyric.stop()
-
+    if (
+      this.audio.error.message.includes('MEDIA_ELEMENT_ERROR: Format error')
+    ) {
+      console.error(
+        'format error encountered; this could indicate network errors.',
+      )
+      return null
+    }
     // 如果删除歌曲或其他原因导致列表为空时
     // 这时候会触发 https://developer.mozilla.org/en-US/docs/Web/API/MediaError
     if (musicSrc) {

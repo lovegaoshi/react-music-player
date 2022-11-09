@@ -125,4 +125,13 @@ const AudioListsPanel = ({
   </div>
 )
 
-export default memo(AudioListsPanel)
+function arePropsEqual(oldProps, newProps) {
+  return (
+    oldProps.audioLists === newProps.audioLists &&
+    oldProps.loading === newProps.loading &&
+    oldProps.playing === newProps.playing &&
+    oldProps.visible === newProps.visible
+  )
+}
+
+export default memo(AudioListsPanel, arePropsEqual)
