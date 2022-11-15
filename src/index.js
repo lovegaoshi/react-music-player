@@ -71,6 +71,7 @@ import {
   isSafari,
   uuId,
 } from './utils'
+import { css, cx } from '@emotion/css'
 
 Sortable.mount(new Swap())
 
@@ -130,6 +131,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     playModelNameVisible: false,
     theme: this.props.theme || this.darkThemeName,
     playMode: this.props.playMode || this.props.defaultPlayMode || '', // 当前播放模式
+    parseSongName: this.props.parseSongName,
     currentAudioVolume: 0, // 当前音量  静音后恢复到之前记录的音量
     initAnimate: false,
     isInitAutoPlay: this.props.autoPlay,
@@ -202,6 +204,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     restartCurrentOnPrev: false,
     // https://github.com/SortableJS/Sortable#options
     sortableOptions: {},
+    themeOverwrite: {},
   }
 
   static propTypes = PROP_TYPES
@@ -283,6 +286,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       showDestroy,
       responsive,
       bannerBg,
+      themeOverwrite,
     } = this.props
 
     const { locale } = this
@@ -298,6 +302,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       audioListsPanelVisible,
       theme,
       name,
+      parsedName,
       cover,
       singer,
       musicSrc,
@@ -364,13 +369,22 @@ export default class ReactJkMusicPlayer extends PureComponent {
           value={Math.ceil(currentTime)}
           {...progressHandler}
           {...PROGRESS_BAR_SLIDER_OPTIONS}
+          trackStyle={{ backgroundColor: themeOverwrite.sliderColor }}
+          handleStyle={{ backgroundColor: themeOverwrite.sliderColor }}
         />
       </>
     )
+    
+    const buttonStyle = css`
+      cursor: pointer;
+      &:hover {
+        color: ${themeOverwrite.sliderColor};
+      }
+    `
 
     const DownloadComponent = showDownload && (
       <span
-        className="group audio-download"
+        className={cx(buttonStyle, 'group audio-download')}
         onClick={this.onAudioDownload}
         title={locale.downloadText}
       >
@@ -393,7 +407,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     const ReloadComponent = showReload && (
       <span
-        className="group reload-btn"
+        className={cx(buttonStyle, "group reload-btn")}
         onClick={this.onAudioReload}
         title={locale.reloadText}
       >
@@ -415,7 +429,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     const PlayModeComponent = showPlayMode && (
       <span
-        className={cls('group loop-btn')}
+        className={cx(buttonStyle, 'group loop-btn')}
         onClick={this.togglePlayMode}
         title={locale.playModeText[currentPlayMode]}
       >
@@ -591,7 +605,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                 ) : (
                   <span className="group">
                     <span
-                      className="group prev-audio"
+                      className={cx(buttonStyle, "group prev-audio")}
                       title={locale.previousTrackText}
                       onClick={this.onPlayPrevAudio}
                     >
@@ -599,14 +613,14 @@ export default class ReactJkMusicPlayer extends PureComponent {
                     </span>
                     {loading ? (
                       <span
-                        className="group loading-icon"
+                        className={cx(buttonStyle, "group loading-icon")}
                         title={locale.loadingText}
                       >
                         {this.iconMap.loading}
                       </span>
                     ) : (
                       <span
-                        className="group play-btn"
+                        className={cx(buttonStyle, "group play-btn")}
                         onClick={this.onTogglePlay}
                         title={
                           shouldShowPlayIcon
@@ -620,7 +634,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                       </span>
                     )}
                     <span
-                      className="group next-audio"
+                      className={cx(buttonStyle, "group next-audio")}
                       title={locale.nextTrackText}
                       onClick={this.onPlayNextAudio}
                     >
@@ -637,11 +651,11 @@ export default class ReactJkMusicPlayer extends PureComponent {
                 {/* 音量控制 */}
                 <span className="group play-sounds" title={locale.volumeText}>
                   {soundValue === 0 ? (
-                    <span className="sounds-icon" onClick={this.onResetVolume}>
+                    <span className={cx(buttonStyle, "sounds-icon")} onClick={this.onResetVolume}>
                       {this.iconMap.mute}
                     </span>
                   ) : (
-                    <span className="sounds-icon" onClick={this.onAudioMute}>
+                    <span className={cx(buttonStyle, "sounds-icon")} onClick={this.onAudioMute}>
                       {this.iconMap.volume}
                     </span>
                   )}
@@ -650,6 +664,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
                     onChange={this.onAudioSoundChange}
                     className="sound-operation"
                     {...VOLUME_BAR_SLIDER_OPTIONS}
+                    trackStyle={{ backgroundColor: themeOverwrite.sliderColor }}
+                    handleStyle={{ backgroundColor: themeOverwrite.sliderColor }}
                   />
                 </span>
 
@@ -662,7 +678,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                   title={locale.playListsText}
                   onClick={this.openAudioListsPanel}
                 >
-                  <span className="audio-lists-icon">
+                  <span className={cx(buttonStyle, "audio-lists-icon")}>
                     {this.iconMap.playLists}
                   </span>
                   <span className="audio-lists-num">{audioLists.length}</span>
@@ -768,11 +784,11 @@ export default class ReactJkMusicPlayer extends PureComponent {
   }
 
   renderAudioTitle = () => {
-    const { isMobile, name } = this.state
+    const { isMobile } = this.state
     if (this.props.renderAudioTitle) {
       return this.props.renderAudioTitle(this.getBaseAudioInfo(), isMobile)
     }
-    return isMobile ? name : this.getAudioTitle()
+    return isMobile ? this.getBaseAudioInfo().name : this.getAudioTitle()
   }
 
   toggleAudioLyric = () => {
@@ -855,13 +871,13 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const playIndex = audioLists.findIndex(
       (audio) => audio[PLAYER_KEY] === playId,
     )
-    const { name, cover, musicSrc, singer, lyric = '' } =
+    const { name, cover, musicSrc, singer, lyric = '', parsedName = '' } =
       audioLists[playIndex] || {}
-
     const loadAudio = (originMusicSrc) => {
       this.setState(
         {
           name,
+          parsedName,
           cover,
           musicSrc: originMusicSrc,
           singer,
@@ -1206,6 +1222,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const {
       cover,
       name,
+      parsedName,
       musicSrc,
       soundValue,
       lyric,
@@ -1226,11 +1243,10 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     const currentPlayIndex = this.getCurrentPlayIndex()
     const currentAudioListInfo = audioLists[currentPlayIndex] || {}
-
     return {
       ...currentAudioListInfo,
       cover,
-      name,
+      name: this.state.parseSongName && parsedName? parsedName : name,
       musicSrc,
       volume: soundValue,
       currentTime,
@@ -2421,7 +2437,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (prevState.musicSrc !== this.state.musicSrc) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ isResetCoverRotate: true })
-      this.audioListRef.current.scrollTop = Math.max(0, this.playingItemRef.current.offsetTop - 50)
+      if (this.audioListRef.current && this.playingItemRef.current) {
+        this.audioListRef.current.scrollTop = Math.max(0, this.playingItemRef.current.offsetTop - 50)
+      }
     }
   }
 
