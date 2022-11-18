@@ -102,6 +102,8 @@
     "rc-slider": "^9.7.2",
     "rc-switch": "^3.2.2",
     "react-draggable": "^4.4.3",
+    "react-virtualized": "^9.22.3",
+    "react-window": "^1.8.8",
     "sortablejs": "^1.13.0"
   },
   "bundlesize": [

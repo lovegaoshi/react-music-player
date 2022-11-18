@@ -236,7 +236,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
   get iconMap() {
     const Spin = () => (
-      <span className="loading group">{this.props.icon.loading}</span>
+      <span className={cx(css`
+      color: ${this.props.themeOverwrite.sliderColor};
+    `, "loading group")}>{this.props.icon.loading}</span>
     )
     return { ...DEFAULT_ICON, ...this.props.icon, loading: <Spin /> }
   }
@@ -254,7 +256,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
     this.destroyBtn = createRef()
     this.shuffledAudioListIndex = shuffleArray(Array.from(Array(props.audioLists.length),(x,i)=>i))
     this.audioListRef = React.createRef()
-    this.playingItemRef = React.createRef()
   }
 
   render() {
@@ -381,7 +382,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
         color: ${themeOverwrite.sliderColor};
       }
     `
-
     const DownloadComponent = showDownload && (
       <span
         className={cx(buttonStyle, 'group audio-download')}
@@ -613,7 +613,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                     </span>
                     {loading ? (
                       <span
-                        className={cx(buttonStyle, "group loading-icon")}
+                        className={cx("group loading-icon")}
                         title={locale.loadingText}
                       >
                         {this.iconMap.loading}
@@ -718,7 +718,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
           removeId={removeId}
           locale={locale}
           audioListRef={this.audioListRef}
-          playingItemRef={this.playingItemRef}
         />
         {/* 播放模式提示框 */}
         {!isMobile && (
@@ -1895,14 +1894,16 @@ export default class ReactJkMusicPlayer extends PureComponent {
     return playId
   }
 
-  _getPlayInfo = (audioLists = []) => {
+  _getPlayInfo = (audioLists = [], newAudioListPlayIndex = null) => {
     const playId = this.getPlayId(audioLists)
 
-    const { name = '', cover = '', singer = '', musicSrc = '', lyric = '' } =
-      audioLists.find((audio) => audio[PLAYER_KEY] === playId) || {}
+    const { name = '', parsedName = '', cover = '', singer = '', musicSrc = '', lyric = '' } =
+    newAudioListPlayIndex? audioLists[newAudioListPlayIndex] 
+      : audioLists.find((audio) => audio[PLAYER_KEY] === playId) || {}
 
     return {
       name,
+      parsedName,
       cover,
       singer,
       musicSrc,
@@ -1930,7 +1931,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
   // I change the name of getPlayInfo to getPlayInfoOfNewList because i didn't want to change the prior changes
   // the only thing this function does is to add id to audiolist elements.
   getPlayInfoOfNewList = (nextProps) => {
-    const { audioLists = [] } = nextProps
+    const { audioLists = [], newAudioListPlayIndex = 0 } = nextProps
     const _audioLists = audioLists.map((info) => {
       const prevAudioBeforeUpdate =
         (nextProps.quietUpdate &&
@@ -1943,8 +1944,11 @@ export default class ReactJkMusicPlayer extends PureComponent {
         [PLAYER_KEY]: prevAudioBeforeUpdate[PLAYER_KEY] || uuId(),
       }
     })
-
-    return this._getPlayInfo(_audioLists)
+    console.debug('newAudioListPlayIndex is now ', newAudioListPlayIndex)
+    this.setState({
+      playIndex: newAudioListPlayIndex
+    })
+    return this._getPlayInfo(_audioLists, newAudioListPlayIndex)
   }
 
   initPlayInfo = (audioLists, cb) => {
@@ -2437,8 +2441,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (prevState.musicSrc !== this.state.musicSrc) {
       // eslint-disable-next-line react/no-did-update-set-state
       this.setState({ isResetCoverRotate: true })
-      if (this.audioListRef.current && this.playingItemRef.current) {
-        this.audioListRef.current.scrollTop = Math.max(0, this.playingItemRef.current.offsetTop - 50)
+      if (this.audioListRef.current) {
+        // this.audioListRef.current.scrollTop = Math.max(0, this.playingItemRef.current.offsetTop - 50)
+        this.audioListRef.current.scrollToItem(this.state.playIndex, 'smart')
       }
     }
   }
@@ -2478,7 +2483,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
   // eslint-disable-next-line camelcase
   UNSAFE_componentWillMount() {
     const { audioLists, remember } = this.props
-
     if (Array.isArray(audioLists) && audioLists.length >= 1) {
       const playInfo = this.getPlayInfo(audioLists)
       const lastPlayStatus = remember ? this.getLastPlayStatus() : {}
