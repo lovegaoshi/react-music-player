@@ -34,9 +34,9 @@ const rowRenderer = ({
       <span className="group player-name" title={name}>
         {name}
       </span>
-      <span className="group player-singer" title={singer}>
+      {singer && (<span className="group player-singer" title={singer}>
         {singer}
-      </span>
+      </span>)}
       {remove && (
         <span
           className="group player-delete"
@@ -94,7 +94,7 @@ const AudioListsPanel = ({
             : icon.play
           : undefined,
         name,
-        singer,
+        singer: isMobile? null : singer,
         clickToDeleteText: locale.clickToDeleteText(name),
         onDelete,
         remove,
