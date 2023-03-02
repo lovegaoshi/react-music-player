@@ -187,6 +187,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     defaultPlayIndex: 0, // 默认播放索引
     getContainer: () => document.body, // 播放器挂载的节点
     autoHiddenCover: false, // 当前播放歌曲没有封面时是否自动隐藏
+    hideCover: false,
     onBeforeAudioDownload: () => {}, // 下载前转换音频地址等
     spaceBar: false, // 是否可以通过空格键 控制播放暂停
     showDestroy: false,
@@ -245,7 +246,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
   constructor(props) {
     super(props)
-
     this.audio = null
     this.targetId = 'music-player-controller'
 
@@ -284,6 +284,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       showLyric,
       getContainer,
       autoHiddenCover,
+      hideCover,
       showDestroy,
       responsive,
       bannerBg,
@@ -372,6 +373,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
           {...PROGRESS_BAR_SLIDER_OPTIONS}
           trackStyle={{ backgroundColor: themeOverwrite.sliderColor }}
           handleStyle={{ backgroundColor: themeOverwrite.sliderColor }}
+          railStyle={{ backgroundColor: themeOverwrite.themeColor }}
         />
       </>
     )
@@ -541,6 +543,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
             extendsContent={extendsContent}
             glassBg={glassBg}
             autoHiddenCover={autoHiddenCover}
+            hideCover={hideCover}
             onCoverClick={this.onCoverClick}
             locale={locale}
             toggleMode={toggleMode}
@@ -1284,7 +1287,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
           updateIntervalEndVolume: undefined,
         })
       }
-
       // Currently playing track or in the middle of fading in
       if (
         (!isCurrentlyFading && this.state.playing) ||
@@ -1344,7 +1346,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
             this.audio.volume = this.getListeningVolume(this.state.soundValue)
           },
         )
-
+        
         this.setState(
           {
             currentVolumeFadeInterval: fadeInInterval,
@@ -1412,7 +1414,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const { remember } = this.props
     const { isInitRemember, musicSrc } = this.state
     const { networkState, readyState } = this.audio
-
     if (!musicSrc) {
       return
     }
@@ -1490,12 +1491,12 @@ export default class ReactJkMusicPlayer extends PureComponent {
       }
 
       this.props.onAudioError &&
-        this.props.onAudioError(
-          this.audio.error || (error && error.reason) || null,
-          playId,
-          audioLists,
-          this.getBaseAudioInfo(),
-        )
+      this.props.onAudioError(
+        this.audio.error || (error && error.reason) || null,
+        playId,
+        audioLists,
+        this.getBaseAudioInfo(),
+      )
     }
   }
 
@@ -1913,7 +1914,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     }
   }
 
-  getPlayInfo = (audioLists = []) => {
+  getPlayInfo = (audioLists = [], newAudioListPlayIndex = null) => {
     const newAudioLists = audioLists.filter((audio) => !audio[PLAYER_KEY])
     const lastAudioLists = audioLists.filter((audio) => audio[PLAYER_KEY])
     const mergedAudioLists = [
@@ -1925,7 +1926,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
         }
       }),
     ]
-    return this._getPlayInfo(mergedAudioLists)
+    return this._getPlayInfo(mergedAudioLists, newAudioListPlayIndex)
   }
 
   // I change the name of getPlayInfo to getPlayInfoOfNewList because i didn't want to change the prior changes
@@ -2484,9 +2485,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
   UNSAFE_componentWillMount() {
     const { audioLists, remember } = this.props
     if (Array.isArray(audioLists) && audioLists.length >= 1) {
-      const playInfo = this.getPlayInfo(audioLists)
+      const playInfo = this.getPlayInfo(audioLists, this.state.playIndex)
       const lastPlayStatus = remember ? this.getLastPlayStatus() : {}
-
       switch (typeof playInfo.musicSrc) {
         case 'function':
           playInfo.musicSrc().then((val) => {
@@ -2494,7 +2494,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
               ...playInfo,
               musicSrc: val,
               ...lastPlayStatus,
-            })
+            });
           }, this.onAudioError)
           break
         default:

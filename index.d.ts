@@ -202,6 +202,7 @@ export interface ReactJkMusicPlayerProps {
   getContainer?: () => HTMLElement
   getAudioInstance?: (instance: ReactJkMusicPlayerInstance) => void
   autoHiddenCover?: boolean
+  hideCover?: boolean
   onBeforeAudioDownload?: (
     audioInfo: ReactJkMusicPlayerAudioInfo,
   ) => Promise<TransformedDownloadAudioInfo>

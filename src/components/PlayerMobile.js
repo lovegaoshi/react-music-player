@@ -26,6 +26,7 @@ const PlayerMobile = ({
   glassBg,
   onCoverClick,
   autoHiddenCover,
+  hideCover,
   icon,
   locale,
   toggleMode,
@@ -57,7 +58,11 @@ const PlayerMobile = ({
     </div>
     <div className={`${prefix}-switch text-center group`}>{themeSwitch}</div>
     {/* lgtm [js/trivial-conditional] */}
-    {(!autoHiddenCover || (autoHiddenCover && cover)) && (
+    
+    
+    { (hideCover || !(!autoHiddenCover || (autoHiddenCover && cover)))
+    ? (<div className={`${prefix}-cover-placeholder text-center`} />)
+    : (
       <div
         className={`${prefix}-cover text-center`}
         onClick={() => onCoverClick()}
@@ -110,14 +115,18 @@ const PlayerMobile = ({
     </div>
     <div className={`${prefix}-operation group`}>
       <ul className="items">
-        {[playMode, icon.download, icon.reload, icon.lyric]
+        {[playMode, icon.reload, icon.lyric] // icon.download,
           .filter(isValidElement)
           .map((item) => (
             <li className="item" key={item.props.className}>
               {item}
             </li>
           ))}
-        {extendsContent}
+        {extendsContent.map(item => (
+          <li className="item" key={`extended-content-${item.props.className}`}>
+            {item}
+          </li>
+        ))}
         <li className="item" onClick={openAudioListsPanel}>
           {icon.playLists}
         </li>
