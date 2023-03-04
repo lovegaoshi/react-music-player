@@ -206,6 +206,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     // https://github.com/SortableJS/Sortable#options
     sortableOptions: {},
     themeOverwrite: {},
+    musicSrcParser: (info) => info.musicSrc, // default parser to parse musicSrc
   }
 
   static propTypes = PROP_TYPES
@@ -289,6 +290,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       responsive,
       bannerBg,
       themeOverwrite,
+      musicSrcParser,
     } = this.props
 
     const { locale } = this
@@ -550,6 +552,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
             renderAudioTitle={this.renderAudioTitle}
             shouldShowPlayIcon={shouldShowPlayIcon}
             isResetCoverRotate={isResetCoverRotate}
+            musicSrcParser={musicSrcParser}
             
           />
         )}
@@ -923,14 +926,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
         this.getBaseAudioInfo(),
       )
     this.props.onPlayIndexChange && this.props.onPlayIndexChange(playIndex)
-
-    switch (typeof musicSrc) {
-      case 'function':
-        musicSrc().then(loadAudio, this.onAudioError)
-        break
-      default:
-        loadAudio(musicSrc)
-    }
+    this.props.musicSrcParser(audioLists[playIndex]).then(
+      musicSrcParsed => {
+        switch (typeof musicSrcParsed) {
+          case 'function':
+            musicSrcParsed().then(loadAudio, this.onAudioError)
+            break
+          default:
+            loadAudio(musicSrcParsed)
+        }
+      }
+    )
   }
 
   resetAudioStatus = () => {
@@ -2115,6 +2121,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       theme,
       autoPlayInitLoadPlayList,
       playIndex,
+      newAudioListPlayIndex,
     } = nextProps
     if (!Array.isArray(audioLists) || !audioLists.length) {
       return
@@ -2142,19 +2149,24 @@ export default class ReactJkMusicPlayer extends PureComponent {
       this.setState({ audioLists: info.audioLists })
       return
     }
-
-    switch (typeof info.musicSrc) {
-      case 'function':
-        info.musicSrc().then((musicSrc) => {
-          this.setState({
-            ...audioInfo,
-            musicSrc,
-          })
-        }, this.onAudioError)
-        break
-      default:
-        this.setState(audioInfo)
-    }
+    this.props.musicSrcParser(audioLists[newAudioListPlayIndex]).then(
+      musicSrcParsed => {
+        switch (typeof musicSrcParsed) {
+          case 'function':
+            musicSrcParsed.then((musicSrc) => {
+              this.setState({
+                ...audioInfo,
+                musicSrc,
+              })
+            }, this.onAudioError)
+            break
+          default:
+            this.setState({
+              ...audioInfo,
+              musicSrc: musicSrcParsed 
+            })
+        }  
+      })
   }
 
   resetPlayId = () => {
