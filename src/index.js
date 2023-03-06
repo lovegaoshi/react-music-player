@@ -206,7 +206,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     // https://github.com/SortableJS/Sortable#options
     sortableOptions: {},
     themeOverwrite: {},
-    musicSrcParser: (info) => info.musicSrc, // default parser to parse musicSrc
+    musicSrcParser: (info) => new Promise(resolve => resolve(info.musicSrc)), // default parser to parse musicSrc
   }
 
   static propTypes = PROP_TYPES
