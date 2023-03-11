@@ -205,8 +205,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
     restartCurrentOnPrev: false,
     // https://github.com/SortableJS/Sortable#options
     sortableOptions: {},
-    themeOverwrite: {},
-    musicSrcParser: (info) => new Promise(resolve => resolve(info.musicSrc)), // default parser to parse musicSrc
+    themeOverwrite: {}, 
+    musicSrcParser: async (info) => info.musicSrc, // default parser to parse musicSrc
   }
 
   static propTypes = PROP_TYPES
@@ -1904,11 +1904,12 @@ export default class ReactJkMusicPlayer extends PureComponent {
   _getPlayInfo = (audioLists = [], newAudioListPlayIndex = null) => {
     const playId = this.getPlayId(audioLists)
 
-    const { name = '', parsedName = '', cover = '', singer = '', musicSrc = '', lyric = '' } =
+    const foundAudio =
     newAudioListPlayIndex? audioLists[newAudioListPlayIndex] 
       : audioLists.find((audio) => audio[PLAYER_KEY] === playId) || {}
-
+    const { name = '', parsedName = '', cover = '', singer = '', musicSrc = '', lyric = '' } = foundAudio      
     return {
+      ...foundAudio,
       name,
       parsedName,
       cover,
@@ -2499,22 +2500,26 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (Array.isArray(audioLists) && audioLists.length >= 1) {
       const playInfo = this.getPlayInfo(audioLists, this.state.playIndex)
       const lastPlayStatus = remember ? this.getLastPlayStatus() : {}
-      switch (typeof playInfo.musicSrc) {
-        case 'function':
-          playInfo.musicSrc().then((val) => {
-            this.setState({
-              ...playInfo,
-              musicSrc: val,
-              ...lastPlayStatus,
-            });
-          }, this.onAudioError)
-          break
-        default:
-          this.setState({
-            ...playInfo,
-            ...lastPlayStatus,
-          })
-      }
+      this.props.musicSrcParser(playInfo).then(
+        musicSrcParsed => {
+          switch (typeof musicSrcParsed) {
+            case 'function':
+              musicSrcParsed().then((val) => {
+                this.setState({
+                  ...playInfo,
+                  musicSrc: val,
+                  ...lastPlayStatus,
+                });
+              }, this.onAudioError)
+              break
+            default:
+              this.setState({
+                ...playInfo,
+                musicSrc: musicSrcParsed,
+                ...lastPlayStatus,
+              })
+          }
+        })
     }
   }
 
