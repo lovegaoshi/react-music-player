@@ -209,9 +209,9 @@
   "remote": {
     "type": "copy",
     "registry": "npm",
-    "hash": "c7e12058-3c78-414e-9d5b-4455c6e22269-1676137868158",
+    "hash": "1205a541-aaaa-4fb9-a9c2-1082bb440816-1681997758024",
     "reference": "D:\\PythonLib\\github\\azusa-player\\Dependencies\\react-jinke-music-player"
   },
   "registry": "npm",
-  "hash": "c7e12058-3c78-414e-9d5b-4455c6e22269-1676137868158"
+  "hash": "1205a541-aaaa-4fb9-a9c2-1082bb440816-1681997758024"
 }

@@ -876,7 +876,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const playIndex = audioLists.findIndex(
       (audio) => audio[PLAYER_KEY] === playId,
     )
-    const { name, cover, musicSrc, singer, lyric = '', parsedName = '' } =
+    const { name, cover, musicSrc, singer, id, lyric = '', parsedName = '' } =
       audioLists[playIndex] || {}
     const loadAudio = (originMusicSrc) => {
       this.setState(
@@ -888,6 +888,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
           singer,
           playId,
           lyric,
+          id,
           currentTime: 0,
           playing: false,
           loading: true,
@@ -1201,9 +1202,11 @@ export default class ReactJkMusicPlayer extends PureComponent {
     }
   }
 
-  getCurrentPlayIndex = () => {
+  getCurrentPlayIndex = (id, key) => {
+    if (!id) id = this.state.playId
+    if (!key) key = PLAYER_KEY
     return this.state.audioLists.findIndex(
-      (audio) => audio[PLAYER_KEY] === this.state.playId,
+      (audio) => audio[key] === id,
     )
   }
 
@@ -1236,6 +1239,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       lyric,
       audioLists,
       currentLyric,
+      id,
     } = this.state
 
     const {
@@ -1248,8 +1252,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       ended,
       startDate,
     } = this.audio || {}
-
-    const currentPlayIndex = this.getCurrentPlayIndex()
+    const currentPlayIndex = this.getCurrentPlayIndex(id, 'id')
     const currentAudioListInfo = audioLists[currentPlayIndex] || {}
     return {
       ...currentAudioListInfo,
@@ -1400,7 +1403,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
       return
     }
     this.setState({ playing: true, loading: false })
-    this.props.onAudioPlay && this.props.onAudioPlay(this.getBaseAudioInfo())
+    const baseAudioInfo = this.getBaseAudioInfo()
+    console.debug('onaudioplay', this.state, baseAudioInfo)
+    this.props.onAudioPlay && this.props.onAudioPlay(baseAudioInfo)
     if (this.state.lyric && this.lyric) {
       this.lyric.togglePlay()
     }
@@ -1893,17 +1898,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
     }
   }
 
-  getPlayId = (audioLists = this.state.audioLists) => {
-    const playIndex = this.getPlayIndex(undefined, audioLists)
+  getPlayId = (audioLists = this.state.audioLists, knownPlayIndex = undefined) => {
+    const playIndex = this.getPlayIndex(knownPlayIndex, audioLists)
     const playId =
       this.state.playId ||
       (audioLists[playIndex] && audioLists[playIndex][PLAYER_KEY])
     return playId
   }
 
-  _getPlayInfo = (audioLists = [], newAudioListPlayIndex = null) => {
-    const playId = this.getPlayId(audioLists)
-
+  _getPlayInfo = (audioLists = [], newAudioListPlayIndex = undefined) => {
+    const playId = this.getPlayId(audioLists, newAudioListPlayIndex)
+    console.debug('getPlayInfo: playId is found:', playId, newAudioListPlayIndex)
     const foundAudio =
     newAudioListPlayIndex? audioLists[newAudioListPlayIndex] 
       : audioLists.find((audio) => audio[PLAYER_KEY] === playId) || {}
@@ -2111,7 +2116,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
       )
     
     this.shuffledAudioListIndex = shuffleArray(Array.from(Array(audioLists.length),(x,i)=>i))
-    console.debug('shuffled AudioList indices is updated to a new length of ', audioLists.length)
+    console.debug('updateAudioLists: shuffled AudioList indices is updated to a new length of ', audioLists.length)
   }
 
   loadNewAudioLists = (nextProps) => {
@@ -2190,7 +2195,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
         )
     })
     this.shuffledAudioListIndex = shuffleArray(Array.from(Array(nextProps.audioLists.length),(x,i)=>i))
-    console.debug('shuffled AudioList indices is updated to a new length of ', nextProps.audioLists.length)
+    console.debug('changeAudioLists: shuffled AudioList indices is updated to a new length of ', nextProps.audioLists.length)
   }
 
   updatePlayIndex = (playIndex) => {
