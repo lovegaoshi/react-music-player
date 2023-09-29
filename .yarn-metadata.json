@@ -7,14 +7,7 @@
     "module": "es/index.js",
     "unpkg": "dist/react-jinke-music-player.min.js",
     "typings": "index.d.ts",
-    "files": [
-      "lib",
-      "es",
-      "dist",
-      "assets",
-      "LICENCE",
-      "index.d.ts"
-    ],
+    "files": ["lib", "es", "dist", "assets", "LICENCE", "index.d.ts"],
     "scripts": {
       "start": "yarn demo",
       "build:clean": "rimraf lib es dist assets",
@@ -54,19 +47,10 @@
         "path": "cz-emoji"
       }
     },
-    "sideEffects": [
-      "assets/*",
-      "dist/*",
-      "*.less"
-    ],
+    "sideEffects": ["assets/*", "dist/*", "*.less"],
     "lint-staged": {
-      "*.{css,less,json}": [
-        "prettier --write"
-      ],
-      "*.{js,jsx}": [
-        "eslint --fix",
-        "prettier --write"
-      ]
+      "*.{css,less,json}": ["prettier --write"],
+      "*.{js,jsx}": ["eslint --fix", "prettier --write"]
     },
     "author": {
       "name": "Jinke.Li",
@@ -209,9 +193,9 @@
   "remote": {
     "type": "copy",
     "registry": "npm",
-    "hash": "1205a541-aaaa-4fb9-a9c2-1082bb440816-1681997758024",
+    "hash": "b71e04b1-fbf4-4c30-a76e-11149285f7a4-1694958891601",
     "reference": "D:\\PythonLib\\github\\azusa-player\\Dependencies\\react-jinke-music-player"
   },
   "registry": "npm",
-  "hash": "1205a541-aaaa-4fb9-a9c2-1082bb440816-1681997758024"
+  "hash": "b71e04b1-fbf4-4c30-a76e-11149285f7a4-1694958891601"
 }
