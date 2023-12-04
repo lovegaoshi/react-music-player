@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 /**
  * @name react-jinke-music-player
  * @description Maybe the best beautiful HTML5 responsive player component for react :)
@@ -63,14 +64,7 @@ import {
 import SORTABLE_CONFIG from './config/sortable'
 import LOCALE_CONFIG from './locale'
 import Lyric from './lyric'
-import {
-  adjustVolume,
-  arrayEqual,
-  createRandomNum,
-  formatTime,
-  isSafari,
-  uuId,
-} from './utils'
+import { adjustVolume, arrayEqual, formatTime, isSafari, uuId } from './utils'
 import { css, cx } from '@emotion/css'
 
 Sortable.mount(new Swap())
@@ -102,7 +96,7 @@ const DEFAULT_ICON = {
 }
 
 function shuffleArray(arr) {
-  return [...arr].sort(() => Math.random() - 0.5);
+  return [...arr].sort(() => Math.random() - 0.5)
 }
 
 export default class ReactJkMusicPlayer extends PureComponent {
@@ -205,7 +199,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     restartCurrentOnPrev: false,
     // https://github.com/SortableJS/Sortable#options
     sortableOptions: {},
-    themeOverwrite: {}, 
+    themeOverwrite: {},
     musicSrcParser: async (info) => info.musicSrc, // default parser to parse musicSrc
   }
 
@@ -238,9 +232,16 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
   get iconMap() {
     const Spin = () => (
-      <span className={cx(css`
-      color: ${this.props.themeOverwrite.sliderColor};
-    `, "loading group")}>{this.props.icon.loading}</span>
+      <span
+        className={cx(
+          css`
+            color: ${this.props.themeOverwrite.sliderColor};
+          `,
+          'loading group',
+        )}
+      >
+        {this.props.icon.loading}
+      </span>
     )
     return { ...DEFAULT_ICON, ...this.props.icon, loading: <Spin /> }
   }
@@ -255,7 +256,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     this.player = createRef()
     this.destroyBtn = createRef()
-    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(props.audioLists.length),(x,i)=>i))
+    this.shuffledAudioListIndex = shuffleArray(
+      Array.from(Array(props.audioLists.length), (x, i) => i),
+    )
     this.audioListRef = React.createRef()
   }
 
@@ -379,7 +382,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
         />
       </>
     )
-    
+
     const buttonStyle = css`
       cursor: pointer;
       &:hover {
@@ -411,7 +414,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     const ReloadComponent = showReload && (
       <span
-        className={cx(buttonStyle, "group reload-btn")}
+        className={cx(buttonStyle, 'group reload-btn')}
         onClick={this.onAudioReload}
         title={locale.reloadText}
       >
@@ -553,7 +556,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
             shouldShowPlayIcon={shouldShowPlayIcon}
             isResetCoverRotate={isResetCoverRotate}
             musicSrcParser={musicSrcParser}
-            
           />
         )}
 
@@ -611,7 +613,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                 ) : (
                   <span className="group">
                     <span
-                      className={cx(buttonStyle, "group prev-audio")}
+                      className={cx(buttonStyle, 'group prev-audio')}
                       title={locale.previousTrackText}
                       onClick={this.onPlayPrevAudio}
                     >
@@ -619,14 +621,14 @@ export default class ReactJkMusicPlayer extends PureComponent {
                     </span>
                     {loading ? (
                       <span
-                        className={cx("group loading-icon")}
+                        className={cx('group loading-icon')}
                         title={locale.loadingText}
                       >
                         {this.iconMap.loading}
                       </span>
                     ) : (
                       <span
-                        className={cx(buttonStyle, "group play-btn")}
+                        className={cx(buttonStyle, 'group play-btn')}
                         onClick={this.onTogglePlay}
                         title={
                           shouldShowPlayIcon
@@ -640,7 +642,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                       </span>
                     )}
                     <span
-                      className={cx(buttonStyle, "group next-audio")}
+                      className={cx(buttonStyle, 'group next-audio')}
                       title={locale.nextTrackText}
                       onClick={this.onPlayNextAudio}
                     >
@@ -657,11 +659,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
                 {/* 音量控制 */}
                 <span className="group play-sounds" title={locale.volumeText}>
                   {soundValue === 0 ? (
-                    <span className={cx(buttonStyle, "sounds-icon")} onClick={this.onResetVolume}>
+                    <span
+                      className={cx(buttonStyle, 'sounds-icon')}
+                      onClick={this.onResetVolume}
+                    >
                       {this.iconMap.mute}
                     </span>
                   ) : (
-                    <span className={cx(buttonStyle, "sounds-icon")} onClick={this.onAudioMute}>
+                    <span
+                      className={cx(buttonStyle, 'sounds-icon')}
+                      onClick={this.onAudioMute}
+                    >
                       {this.iconMap.volume}
                     </span>
                   )}
@@ -671,7 +679,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
                     className="sound-operation"
                     {...VOLUME_BAR_SLIDER_OPTIONS}
                     trackStyle={{ backgroundColor: themeOverwrite.sliderColor }}
-                    handleStyle={{ backgroundColor: themeOverwrite.sliderColor }}
+                    handleStyle={{
+                      backgroundColor: themeOverwrite.sliderColor,
+                    }}
                   />
                 </span>
 
@@ -684,7 +694,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
                   title={locale.playListsText}
                   onClick={this.openAudioListsPanel}
                 >
-                  <span className={cx(buttonStyle, "audio-lists-icon")}>
+                  <span className={cx(buttonStyle, 'audio-lists-icon')}>
                     {this.iconMap.playLists}
                   </span>
                   <span className="audio-lists-num">{audioLists.length}</span>
@@ -865,9 +875,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
       canPlay,
     } = state
     if (Array.isArray(audioLists) && audioLists.length === 0) {
-      // eslint-disable-next-line no-console
       return console.warn(
-        'Warning: Your playlist has no songs. and cannot play !',
+        '[RJKM] Warning: Your playlist has no songs. and cannot play !',
       )
     }
     if (loading && playId === currentPlayId) {
@@ -876,8 +885,15 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const playIndex = audioLists.findIndex(
       (audio) => audio[PLAYER_KEY] === playId,
     )
-    const { name, cover, musicSrc, singer, id, lyric = '', parsedName = '' } =
-      audioLists[playIndex] || {}
+    const {
+      name,
+      cover,
+      musicSrc,
+      singer,
+      id,
+      lyric = '',
+      parsedName = '',
+    } = audioLists[playIndex] || {}
     const loadAudio = (originMusicSrc) => {
       this.setState(
         {
@@ -927,17 +943,15 @@ export default class ReactJkMusicPlayer extends PureComponent {
         this.getBaseAudioInfo(),
       )
     this.props.onPlayIndexChange && this.props.onPlayIndexChange(playIndex)
-    this.props.musicSrcParser(audioLists[playIndex]).then(
-      musicSrcParsed => {
-        switch (typeof musicSrcParsed) {
-          case 'function':
-            musicSrcParsed().then(loadAudio, this.onAudioError)
-            break
-          default:
-            loadAudio(musicSrcParsed)
-        }
+    this.props.musicSrcParser(audioLists[playIndex]).then((musicSrcParsed) => {
+      switch (typeof musicSrcParsed) {
+        case 'function':
+          musicSrcParsed().then(loadAudio, this.onAudioError)
+          break
+        default:
+          loadAudio(musicSrcParsed)
       }
-    )
+    })
   }
 
   resetAudioStatus = () => {
@@ -999,7 +1013,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
         newAudioLists,
         this.getBaseAudioInfo(),
       )
-    
+
     this.shuffledAudioListIndex = []
   }
 
@@ -1039,9 +1053,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (this.state.musicSrc) {
       const { customDownloader } = this.props
       const baseAudioInfo = this.getBaseAudioInfo()
-      const onBeforeAudioDownload = this.props.onBeforeAudioDownload(
-        baseAudioInfo,
-      )
+      const onBeforeAudioDownload =
+        this.props.onBeforeAudioDownload(baseAudioInfo)
       let transformedDownloadAudioInfo = {}
       if (onBeforeAudioDownload && onBeforeAudioDownload.then) {
         onBeforeAudioDownload.then((info) => {
@@ -1203,10 +1216,10 @@ export default class ReactJkMusicPlayer extends PureComponent {
   }
 
   getCurrentPlayIndex = (id, key) => {
-    if (!id) id = this.state.playId
-    if (!key) key = PLAYER_KEY
+    const defaultId = id || this.state.playId
+    const defaultKey = key || PLAYER_KEY
     return this.state.audioLists.findIndex(
-      (audio) => audio[key] === id,
+      (audio) => audio[defaultKey] === defaultId,
     )
   }
 
@@ -1257,7 +1270,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     return {
       ...currentAudioListInfo,
       cover,
-      name: this.state.parseSongName && parsedName? parsedName : name,
+      name: this.state.parseSongName && parsedName ? parsedName : name,
       musicSrc,
       volume: soundValue,
       currentTime,
@@ -1303,28 +1316,26 @@ export default class ReactJkMusicPlayer extends PureComponent {
       ) {
         this.setState({ currentVolumeFade: VOLUME_FADE.OUT })
         // Fade in from current volume to 0
-        const {
-          fadeInterval: fadeOutInterval,
-          updateIntervalEndVolume,
-        } = adjustVolume(
-          this.audio,
-          this.audio.volume,
-          0,
-          {
-            duration: fadeOut,
-          },
-          () => {
-            this.audio.pause()
-            this.setState({
-              currentVolumeFade: VOLUME_FADE.NONE,
-              currentVolumeFadeInterval: undefined,
-              playing: false,
-              updateIntervalEndVolume: undefined,
-            })
-            // Restore volume so slider does not reset to zero
-            this.audio.volume = this.getListeningVolume(this.state.soundValue)
-          },
-        )
+        const { fadeInterval: fadeOutInterval, updateIntervalEndVolume } =
+          adjustVolume(
+            this.audio,
+            this.audio.volume,
+            0,
+            {
+              duration: fadeOut,
+            },
+            () => {
+              this.audio.pause()
+              this.setState({
+                currentVolumeFade: VOLUME_FADE.NONE,
+                currentVolumeFadeInterval: undefined,
+                playing: false,
+                updateIntervalEndVolume: undefined,
+              })
+              // Restore volume so slider does not reset to zero
+              this.audio.volume = this.getListeningVolume(this.state.soundValue)
+            },
+          )
 
         this.setState({
           currentVolumeFadeInterval: fadeOutInterval,
@@ -1335,27 +1346,25 @@ export default class ReactJkMusicPlayer extends PureComponent {
         // Start volume may not be 0 if interrupting a fade-out
         const startVolume = isCurrentlyFading ? this.audio.volume : 0
         const endVolume = this.getListeningVolume(this.state.soundValue)
-        const {
-          fadeInterval: fadeInInterval,
-          updateIntervalEndVolume,
-        } = adjustVolume(
-          this.audio,
-          startVolume,
-          endVolume,
-          {
-            duration: fadeIn,
-          },
-          () => {
-            this.setState({
-              currentVolumeFade: VOLUME_FADE.NONE,
-              currentVolumeFadeInterval: undefined,
-              updateIntervalEndVolume: undefined,
-            })
-            // It's possible that the volume level in the UI has changed since beginning of fade
-            this.audio.volume = this.getListeningVolume(this.state.soundValue)
-          },
-        )
-        
+        const { fadeInterval: fadeInInterval, updateIntervalEndVolume } =
+          adjustVolume(
+            this.audio,
+            startVolume,
+            endVolume,
+            {
+              duration: fadeIn,
+            },
+            () => {
+              this.setState({
+                currentVolumeFade: VOLUME_FADE.NONE,
+                currentVolumeFadeInterval: undefined,
+                updateIntervalEndVolume: undefined,
+              })
+              // It's possible that the volume level in the UI has changed since beginning of fade
+              this.audio.volume = this.getListeningVolume(this.state.soundValue)
+            },
+          )
+
         this.setState(
           {
             currentVolumeFadeInterval: fadeInInterval,
@@ -1404,7 +1413,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
     }
     this.setState({ playing: true, loading: false })
     const baseAudioInfo = this.getBaseAudioInfo()
-    console.debug('onaudioplay', this.state, baseAudioInfo)
     this.props.onAudioPlay && this.props.onAudioPlay(baseAudioInfo)
     if (this.state.lyric && this.lyric) {
       this.lyric.togglePlay()
@@ -1480,11 +1488,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const currentPlayMode = isSingleLoop ? PLAY_MODE.order : playMode
 
     this.lyric && this.lyric.stop()
+    if (this.audio.error === null) {
+      console.warn(
+        '[RJKM] music player isnt encounting an error yet onAudioError is called. but why?',
+      )
+      return null
+    }
     if (
       this.audio.error.message.includes('MEDIA_ELEMENT_ERROR: Format error')
     ) {
       console.error(
-        'format error encountered; this could indicate network errors.',
+        '[RJKM] format error encountered; this could indicate network errors.',
       )
       return null
     }
@@ -1502,12 +1516,12 @@ export default class ReactJkMusicPlayer extends PureComponent {
       }
 
       this.props.onAudioError &&
-      this.props.onAudioError(
-        this.audio.error || (error && error.reason) || null,
-        playId,
-        audioLists,
-        this.getBaseAudioInfo(),
-      )
+        this.props.onAudioError(
+          this.audio.error || (error && error.reason) || null,
+          playId,
+          audioLists,
+          this.getBaseAudioInfo(),
+        )
     }
   }
 
@@ -1564,13 +1578,16 @@ export default class ReactJkMusicPlayer extends PureComponent {
         let randomIndex = this.shuffledAudioListIndex.findIndex(
           (index) => index === currentPlayIndex,
         )
-        randomIndex = isNext? randomIndex + 1 : randomIndex - 1
+        randomIndex = isNext ? randomIndex + 1 : randomIndex - 1
         if (randomIndex >= this.shuffledAudioListIndex.length) {
           randomIndex = 0
         } else if (randomIndex <= 0) {
           randomIndex = this.shuffledAudioListIndex.length - 1
         }
-        this.audioListsPlay(audioLists[this.shuffledAudioListIndex[randomIndex]][PLAYER_KEY], true)
+        this.audioListsPlay(
+          audioLists[this.shuffledAudioListIndex[randomIndex]][PLAYER_KEY],
+          true,
+        )
         break
       default:
         break
@@ -1739,7 +1756,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
     // TODO: remove
     if (this.props.onAudioListsDragEnd) {
-      // eslint-disable-next-line no-console
       console.warn(
         '[Deprecated] onAudioListsDragEnd is deprecated. please use onAudioListsSortEnd(oldIndex, newIndex){}',
       )
@@ -1774,13 +1790,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
   }
 
   getLastPlayStatus = () => {
-    const {
-      theme,
-      defaultPlayMode,
-      playMode,
-      defaultPlayIndex,
-      playIndex,
-    } = this.props
+    const { theme, defaultPlayMode, playMode, defaultPlayIndex, playIndex } =
+      this.props
 
     const status = {
       currentTime: 0,
@@ -1898,7 +1909,10 @@ export default class ReactJkMusicPlayer extends PureComponent {
     }
   }
 
-  getPlayId = (audioLists = this.state.audioLists, knownPlayIndex = undefined) => {
+  getPlayId = (
+    audioLists = this.state.audioLists,
+    knownPlayIndex = undefined,
+  ) => {
     const playIndex = this.getPlayIndex(knownPlayIndex, audioLists)
     const playId =
       this.state.playId ||
@@ -1908,11 +1922,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
 
   _getPlayInfo = (audioLists = [], newAudioListPlayIndex = undefined) => {
     const playId = this.getPlayId(audioLists, newAudioListPlayIndex)
-    console.debug('getPlayInfo: playId is found:', playId, newAudioListPlayIndex)
-    const foundAudio =
-    newAudioListPlayIndex? audioLists[newAudioListPlayIndex] 
+    const foundAudio = newAudioListPlayIndex
+      ? audioLists[newAudioListPlayIndex]
       : audioLists.find((audio) => audio[PLAYER_KEY] === playId) || {}
-    const { name = '', parsedName = '', cover = '', singer = '', musicSrc = '', lyric = '' } = foundAudio      
+    const {
+      name = '',
+      parsedName = '',
+      cover = '',
+      singer = '',
+      musicSrc = '',
+      lyric = '',
+    } = foundAudio
     return {
       ...foundAudio,
       name,
@@ -1957,9 +1977,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
         [PLAYER_KEY]: prevAudioBeforeUpdate[PLAYER_KEY] || uuId(),
       }
     })
-    console.debug('newAudioListPlayIndex is now ', newAudioListPlayIndex)
     this.setState({
-      playIndex: newAudioListPlayIndex
+      playIndex: newAudioListPlayIndex,
     })
     return this._getPlayInfo(_audioLists, newAudioListPlayIndex)
   }
@@ -2114,9 +2133,14 @@ export default class ReactJkMusicPlayer extends PureComponent {
         audioLists,
         this.getBaseAudioInfo(),
       )
-    
-    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(audioLists.length),(x,i)=>i))
-    console.debug('updateAudioLists: shuffled AudioList indices is updated to a new length of ', audioLists.length)
+
+    this.shuffledAudioListIndex = shuffleArray(
+      Array.from(Array(audioLists.length), (x, i) => i),
+    )
+    console.debug(
+      'updateAudioLists: shuffled AudioList indices is updated to a new length of ',
+      audioLists.length,
+    )
   }
 
   loadNewAudioLists = (nextProps) => {
@@ -2155,8 +2179,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
       this.setState({ audioLists: info.audioLists })
       return
     }
-    this.props.musicSrcParser(audioLists[newAudioListPlayIndex]).then(
-      musicSrcParsed => {
+    this.props
+      .musicSrcParser(audioLists[newAudioListPlayIndex])
+      .then((musicSrcParsed) => {
         switch (typeof musicSrcParsed) {
           case 'function':
             musicSrcParsed.then((musicSrc) => {
@@ -2169,9 +2194,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
           default:
             this.setState({
               ...audioInfo,
-              musicSrc: musicSrcParsed 
+              musicSrc: musicSrcParsed,
             })
-        }  
+        }
       })
   }
 
@@ -2194,17 +2219,21 @@ export default class ReactJkMusicPlayer extends PureComponent {
           this.getBaseAudioInfo(),
         )
     })
-    this.shuffledAudioListIndex = shuffleArray(Array.from(Array(nextProps.audioLists.length),(x,i)=>i))
-    console.debug('changeAudioLists: shuffled AudioList indices is updated to a new length of ', nextProps.audioLists.length)
+    this.shuffledAudioListIndex = shuffleArray(
+      Array.from(Array(nextProps.audioLists.length), (x, i) => i),
+    )
+    console.debug(
+      'changeAudioLists: shuffled AudioList indices is updated to a new length of ',
+      nextProps.audioLists.length,
+    )
   }
 
   updatePlayIndex = (playIndex) => {
     const currentPlayIndex = this.getCurrentPlayIndex()
     if (playIndex !== undefined && currentPlayIndex !== playIndex) {
       this.resetAudioPlayStatus().then(() => {
-        const currentPlayAudio = this.state.audioLists[
-          this.getPlayIndex(playIndex)
-        ]
+        const currentPlayAudio =
+          this.state.audioLists[this.getPlayIndex(playIndex)]
         if (currentPlayAudio && currentPlayAudio[PLAYER_KEY]) {
           this.audioListsPlay(currentPlayAudio[PLAYER_KEY], true)
         }
@@ -2303,7 +2332,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
           position: audio.currentTime || 0,
         })
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.error('Update media session position state failed: ', error)
       }
     }
@@ -2349,7 +2377,6 @@ export default class ReactJkMusicPlayer extends PureComponent {
           this.updateMediaSessionPositionState()
         })
       } catch (error) {
-        // eslint-disable-next-line no-console
         console.warn(
           'Warning! The "seekto" media session action is not supported.',
         )
@@ -2505,26 +2532,25 @@ export default class ReactJkMusicPlayer extends PureComponent {
     if (Array.isArray(audioLists) && audioLists.length >= 1) {
       const playInfo = this.getPlayInfo(audioLists, this.state.playIndex)
       const lastPlayStatus = remember ? this.getLastPlayStatus() : {}
-      this.props.musicSrcParser(playInfo).then(
-        musicSrcParsed => {
-          switch (typeof musicSrcParsed) {
-            case 'function':
-              musicSrcParsed().then((val) => {
-                this.setState({
-                  ...playInfo,
-                  musicSrc: val,
-                  ...lastPlayStatus,
-                });
-              }, this.onAudioError)
-              break
-            default:
+      this.props.musicSrcParser(playInfo).then((musicSrcParsed) => {
+        switch (typeof musicSrcParsed) {
+          case 'function':
+            musicSrcParsed().then((val) => {
               this.setState({
                 ...playInfo,
-                musicSrc: musicSrcParsed,
+                musicSrc: val,
                 ...lastPlayStatus,
               })
-          }
-        })
+            }, this.onAudioError)
+            break
+          default:
+            this.setState({
+              ...playInfo,
+              musicSrc: musicSrcParsed,
+              ...lastPlayStatus,
+            })
+        }
+      })
     }
   }
 
