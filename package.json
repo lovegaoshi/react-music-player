@@ -6,14 +6,6 @@
   "module": "es/index.js",
   "unpkg": "dist/react-jinke-music-player.min.js",
   "typings": "index.d.ts",
-  "files": [
-    "lib",
-    "es",
-    "dist",
-    "assets",
-    "LICENCE",
-    "index.d.ts"
-  ],
   "scripts": {
     "start": "yarn demo",
     "build:clean": "rimraf lib es dist assets",
@@ -45,7 +37,7 @@
     "pretty:quick": "pretty-quick",
     "lint-staged": "lint-staged",
     "release": "semantic-release",
-    "prepare": "husky install"
+    "prepare": "yarn build"
   },
   "config": {
     "commitizen": {
