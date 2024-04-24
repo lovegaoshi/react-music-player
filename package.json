@@ -6,6 +6,9 @@
   "module": "es/index.js",
   "unpkg": "dist/react-jinke-music-player.min.js",
   "typings": "index.d.ts",
+  "files": [
+    "*"
+  ],
   "scripts": {
     "start": "yarn demo",
     "build:clean": "rimraf lib es dist assets",
