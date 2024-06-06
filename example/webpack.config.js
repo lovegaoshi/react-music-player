@@ -98,22 +98,12 @@ module.exports = () => {
     //   async: 'commonjs async',
     // },
     devServer: {
-      contentBase: path.join(__dirname, '../example/'),
       host: HOST,
       compress: true,
-      inline: true,
       port: PORT,
       historyApiFallback: true,
       hot: true,
       open: true,
-      clientLogLevel: 'silent',
-      stats: {
-        color: true,
-        errors: true,
-        version: true,
-        warnings: true,
-        progress: true,
-      },
     },
     plugins: [
       new CleanWebpackPlugin(),
