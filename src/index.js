@@ -332,8 +332,8 @@ export default class ReactJkMusicPlayer extends PureComponent {
       preload === false || preload === 'none'
         ? {}
         : preload === true
-        ? { preload: 'auto' }
-        : { preload }
+          ? { preload: 'auto' }
+          : { preload }
 
     const panelToggleAnimate = initAnimate
       ? { show: audioListsPanelVisible, hide: !audioListsPanelVisible }
@@ -873,14 +873,17 @@ export default class ReactJkMusicPlayer extends PureComponent {
       audioLists,
       loading,
       canPlay,
+      playMode,
     } = state
     if (Array.isArray(audioLists) && audioLists.length === 0) {
       return console.warn(
         '[RJKM] Warning: Your playlist has no songs. and cannot play !',
       )
     }
-    if (loading && playId === currentPlayId) {
-      return
+    if (playId === currentPlayId) {
+      if (loading || playMode === PLAY_MODE.singleLoop) {
+        return
+      }
     }
     const playIndex = audioLists.findIndex(
       (audio) => audio[PLAYER_KEY] === playId,
