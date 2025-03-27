@@ -358,7 +358,7 @@ export default class ReactJkMusicPlayer extends PureComponent {
     const progressHandler = seeked
       ? {
           onChange: this.onProgressChange,
-          onAfterChange: this.onAudioSeeked,
+          onChangeComplete: this.onAudioSeeked,
         }
       : {}
 
