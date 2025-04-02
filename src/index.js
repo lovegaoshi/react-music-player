@@ -1017,7 +1017,9 @@ export default class ReactJkMusicPlayer extends PureComponent {
         this.getBaseAudioInfo(),
       )
 
-    this.shuffledAudioListIndex = []
+    this.shuffledAudioListIndex = shuffleArray(
+      Array.from(Array(newAudioLists.length), (x, i) => i),
+    )
   }
 
   openAudioListsPanel = () => {
