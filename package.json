@@ -38,7 +38,6 @@
     "prepublishOnly": "yarn build",
     "prettier": "prettier -c --write '**/*'",
     "pretty:quick": "pretty-quick",
-    "lint-staged": "lint-staged",
     "release": "semantic-release",
     "prepare": "yarn build"
   },
@@ -88,7 +87,6 @@
   ],
   "dependencies": {
     "@emotion/css": "^11.10.5",
-    "@react-icons/all-files": "^4.1.0",
     "classnames": "^2.5.1",
     "downloadjs": "^1.4.7",
     "is-mobile": "^4.0.0",
@@ -96,6 +94,7 @@
     "rc-slider": "^10.6.2",
     "rc-switch": "^4.1.0",
     "react-draggable": "^4.4.3",
+    "react-icons": "^5.5.0",
     "react-virtualized": "^9.22.3",
     "react-window": "^1.8.10",
     "sortablejs": "^1.15.2"
@@ -160,7 +159,6 @@
     "postcss": "^8.4.38",
     "postcss-loader": "^8.1.1",
     "power-assert": "^1.6.1",
-    "pre-commit": "^1.2.2",
     "prettier": "^3.3.1",
     "pretty-quick": "^4.0.0",
     "react": "18.3.1",
