@@ -1634,11 +1634,12 @@ export default class ReactJkMusicPlayer extends PureComponent {
       this.audio.currentTime = 0
       return
     }
-
+    this.props.onPlayPrevAudio?.()
     this.audioPrevAndNextBasePlayHandle(false)
   }
 
   onPlayNextAudio = () => {
+    this.props.onPlayNextAudio?.()
     this.audioPrevAndNextBasePlayHandle(true)
   }
 
