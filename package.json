@@ -89,6 +89,7 @@
     "@emotion/css": "^11.10.5",
     "classnames": "^2.5.1",
     "downloadjs": "^1.4.7",
+    "esbuild": "^0.25.10",
     "is-mobile": "^4.0.0",
     "prop-types": "^15.7.2",
     "rc-slider": "^10.6.2",
@@ -98,6 +99,9 @@
     "react-virtualized": "^9.22.3",
     "react-window": "^1.8.10",
     "sortablejs": "^1.15.2"
+  },
+  "resolutions": {
+    "esbuild": "^0.25.10"
   },
   "devDependencies": {
     "@babel/cli": "7.24.7",
@@ -181,5 +185,5 @@
     "react": ">=16.9.0",
     "react-dom": ">=16.9.0"
   },
-  "packageManager": "yarn@1.22.22+sha1.ac34549e6aa8e7ead463a7407e1c7390f61a6610"
+  "packageManager": "yarn@4.10.3"
 }
